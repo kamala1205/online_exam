@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Exam Review{% endblock %}
+
+{% block content %}
+<div class="exam-wrapper">
+
+    <h2>{{ exam.title }} – Review</h2>
+
+    {% for q in questions %}
+    <div class="question-card">
+
+        <p><strong>Q{{ loop.index }}.</strong> {{ q.question }}</p>
+
+        {% for opt in [q.option1, q.option2, q.option3, q.option4] %}
+
+        {% set cls = "" %}
+        {% if opt == q.selected_option and opt == q[q.correct] %}
+        {% set cls = "correct-selected" %}
+        {% elif opt == q.selected_option %}
+        {% set cls = "wrong-selected" %}
+        {% elif opt == q[q.correct] %}
+        {% set cls = "correct-answer" %}
+        {% endif %}
+
+        <div class="option {{ cls }}">
+            {{ opt }}
+
+            {% if opt == q.selected_option and opt == q[q.correct] %}
+            ✅ Correct
+            {% elif opt == q.selected_option %}
+            ❌ Your Answer
+            {% elif opt == q[q.correct] %}
+            ✔ Correct Answer
+            {% endif %}
+        </div>
+
+        {% endfor %}
+
+    </div>
+    {% endfor %}
+
+    <a href="{{ url_for('student_dashboard') }}" class="btn small-btn">
+        ⬅ Back to Dashboard
+    </a>
+
+</div>
+{% endblock %}

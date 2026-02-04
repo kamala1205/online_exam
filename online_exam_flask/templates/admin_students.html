@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}My Students{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <div class="dashboard-header">
+        <div>
+            <h2>My Students</h2>
+            <p class="subtitle">
+                Manager ID:
+                <strong style="color:#4ade80;">
+                    {{ manager_id }}
+                </strong>
+            </p>
+        </div>
+
+        <a href="{{ url_for('admin_dashboard') }}" class="btn small-btn">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ student.username }}</td>
+                    <td>{{ student.email }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" style="text-align:center;">
+                        No students registered yet
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

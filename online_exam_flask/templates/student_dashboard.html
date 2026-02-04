@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <div>
+            <h2>Student Dashboard</h2>
+
+            <!-- ADMIN INFO -->
+            <p class="subtitle">
+                You are under
+                <strong style="color:#4ade80;">
+                    Admin: {{ admin_username }}
+                </strong>
+                <br>
+                <small style="color:#9ca3af;">
+                    Manager ID: {{ session['user']['manager_id'] }}
+                </small>
+            </p>
+
+            <p class="subtitle">Choose an exam or get help if you face issues</p>
+        </div>
+
+        <button class="btn small-btn" onclick="openHelp()">
+            Help & Support
+        </button>
+    </div>
+
+    <!-- PERFORMANCE -->
+    <!-- PERFORMANCE -->
+    <h3 style="margin-top:20px;color:white;">My Performance</h3>
+    <div class="stats-grid">
+
+        <!-- TOTAL EXAMS -->
+        <div class="stat-card">
+            <h3>{{ exams|length if exams else 0 }}</h3>
+            <p>Total Exams</p>
+        </div>
+
+        <!-- TOTAL ATTEMPTED -->
+        <div class="stat-card">
+            <h3>{{ results|length if results else 0 }}</h3>
+            <p>Total Exams Attempted</p>
+        </div>
+
+        <!-- HIGHEST SCORE -->
+        <div class="stat-card">
+            <h3>{{ (results|map(attribute='score')|max) if results else 0 }}</h3>
+            <p>Highest Score</p>
+        </div>
+
+    </div>
+
+
+    <!-- EXAMS -->
+    <h3 style="margin-top:30px;color:white;">Available Exams</h3>
+    <div class="exam-grid">
+        {% for exam in exams %}
+        <div class="exam-card">
+            <h3>{{ exam.title }}</h3>
+            {% if exam.notes_file %}
+            <a href="{{ url_for('static', filename='uploads/' + exam.notes_file) }}" class="btn small-btn"
+                target="_blank">
+                📘 Download Notes
+            </a>
+            {% endif %}
+
+            {% if exam.status == "Attempted" %}
+            <a href="{{ url_for('view_exam_result', exam_id=exam.id) }}" class="btn small-btn">
+                📊 See Results
+            </a>
+            {% elif exam.can_attempt %}
+            <button class="btn start-btn" onclick="openInstructions('{{ exam.id }}')">
+                Start Exam
+            </button>
+            {% else %}
+            <button class="btn danger" disabled>{{ exam.status }}</button>
+            {% endif %}
+
+
+
+
+        </div>
+        {% else %}
+        <div class="no-exams">No exams available</div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- INSTRUCTIONS MODAL -->
+<div id="instructionModal" class="modal">
+    <div class="modal-content">
+        <h3>Exam Instructions</h3>
+        <ul>
+            <li>Do not refresh the page</li>
+            <li>Each question carries 1 mark</li>
+            <li>No negative marking</li>
+            <li>Submit before time ends</li>
+        </ul>
+
+        <button id="startExamBtn" class="btn">Proceed to Exam</button>
+        <button class="btn danger" onclick="closeInstructions()">Cancel</button>
+    </div>
+</div>
+
+<!-- HELP MODAL -->
+<div id="helpModal" class="modal">
+    <div class="modal-content">
+        <h3>Help & Support</h3>
+        <p>📌 If exam does not load, refresh once.</p>
+        <p>📌 If options don’t work, contact admin.</p>
+        <p>📌 Internet issues may affect submission.</p>
+
+        <button class="btn" onclick="toggleChatbot()">Open Chatbot 🤖</button>
+        <button class="btn danger" onclick="closeHelp()">Close</button>
+    </div>
+</div>
+
+<!-- CHATBOT -->
+<div id="chatbot">
+    <div class="chat-header">Exam Support Bot 🤖</div>
+    <div class="chat-body" id="chatBody">
+        <div class="bot">Hi! How can I help you?</div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type your issue...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    let selectedExam = null;
+
+    function openInstructions(examId) {
+        selectedExam = examId;
+        document.getElementById("instructionModal").style.display = "flex";
+    }
+
+    function closeInstructions() {
+        document.getElementById("instructionModal").style.display = "none";
+    }
+
+    document.getElementById("startExamBtn").onclick = function () {
+        window.location.href = "/take_exam/" + selectedExam;
+    };
+
+    function openHelp() {
+        document.getElementById("helpModal").style.display = "flex";
+    }
+
+    function closeHelp() {
+        document.getElementById("helpModal").style.display = "none";
+    }
+
+    function toggleChatbot() {
+        document.getElementById("chatbot").style.display = "flex";
+    }
+
+    function sendMessage() {
+        const input = document.getElementById("userInput");
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        const chat = document.getElementById("chatBody");
+        chat.innerHTML += `<div class="user">${msg}</div>`;
+        input.value = "";
+
+        fetch("/chatbot", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: msg })
+        })
+            .then(res => res.json())
+            .then(data => {
+                chat.innerHTML += `<div class="bot">${data.reply}</div>`;
+                chat.scrollTop = chat.scrollHeight;
+            });
+    }
+</script>
+
+{% endblock %}

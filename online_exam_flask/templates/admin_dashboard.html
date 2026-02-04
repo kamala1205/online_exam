@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>{{ exams|length }}</h3>
+            <p>Total Exams</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>{{ stats.total_students }}</h3>
+            <p>Total Students</p>
+
+            <a href="{{ url_for('admin_students') }}" class="view-link">
+                View Students →
+            </a>
+        </div>
+
+        <div class="stat-card">
+            <h3>{{ stats.total_results }}</h3>
+            <p>Total Results</p>
+        </div>
+    </div>
+
+
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <div>
+            <h2>Admin Dashboard</h2>
+
+            <!-- MANAGER ID -->
+            <p style="margin-top:6px;color:#ccc;font-size:14px;">
+                <strong>Manager ID:</strong>
+                <span style="color:#4ade80;font-weight:600;">
+                    {{ manager_id }}
+                </span>
+            </p>
+        </div>
+
+        <div>
+            <a href="{{ url_for('admin_results') }}" class="btn small-btn">
+                View Results
+            </a>
+            <a href="{{ url_for('create_exam') }}" class="btn create-btn">
+                + Create New Exam
+            </a>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Exam Name</th>
+                    <th>Notes</th>
+                    <th style="width:260px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exam in exams %}
+                <tr>
+                    <td>
+                        {{ exam.title }}<br>
+                        <small>Exam ID: {{ exam.id }}</small>
+                    </td>
+                    <td>
+                        {% if exam.notes_file %}
+                        <a href="{{ url_for('static', filename='uploads/' + exam.notes_file) }}" class="btn small-btn"
+                            target="_blank">
+                            View PDF
+                        </a>
+
+                        <form action="{{ url_for('upload_notes', exam_id=exam.id) }}" method="POST"
+                            enctype="multipart/form-data" style="display:inline;">
+                            <input type="file" name="notes" accept="application/pdf" required>
+                            <button class="btn small-btn">Replace</button>
+                        </form>
+
+                        <form action="{{ url_for('delete_notes', exam_id=exam.id) }}" method="POST"
+                            style="display:inline;">
+                            <button class="btn small-btn danger">Delete</button>
+                        </form>
+                        {% else %}
+                        <form action="{{ url_for('upload_notes', exam_id=exam.id) }}" method="POST"
+                            enctype="multipart/form-data">
+                            <input type="file" name="notes" accept="application/pdf" required>
+                            <button class="btn small-btn">Upload</button>
+                        </form>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{{ url_for('add_question', exam_id=exam.id) }}" class="btn small-btn">
+                            Add Questions
+                        </a>
+
+                        <a href="{{ url_for('edit_exam', exam_id=exam.id) }}" class="btn small-btn">
+                            Edit
+                        </a>
+
+                        <form action="{{ url_for('delete_exam', exam_id=exam.id) }}" method="POST"
+                            style="display:inline;" onsubmit="return confirm('Delete this exam?');">
+                            <button class="btn small-btn danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="2" style="text-align:center;">
+                        No exams created
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Online Exam{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <h1>Online Examination Portal</h1>
+
+        {% if session.get('user') %}
+        <nav>
+            <span style="color:#ccc; margin-right:10px;">
+                Welcome, {{ session['user']['username'] }}
+            </span>
+
+            {% if session['user']['role'] == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            {% else %}
+            <a href="{{ url_for('student_dashboard') }}">Dashboard</a>
+            {% endif %}
+
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </nav>
+        {% endif %}
+    </header>
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- MAIN CONTENT -->
+    <main class="page">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        © 2025 Online Exam System | Flask Project
+    </footer>
+
+</body>
+
+</html>

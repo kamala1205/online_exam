@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Create Exam{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Create New Exam</h2>
+
+    <form method="POST">
+        <label>Exam Title</label>
+        <input type="text" name="title" placeholder="Eg: Python Basics Test" required>
+        <label>Start Time (optional)</label>
+        <input type="datetime-local" name="start_time">
+
+        <label>End Time (optional)</label>
+        <input type="datetime-local" name="end_time">
+
+        <label>Exam Duration (minutes)</label>
+        <input type="number" name="duration_minutes" required>
+
+
+        <button type="submit">Create Exam</button>
+    </form>
+</div>
+{% endblock %}

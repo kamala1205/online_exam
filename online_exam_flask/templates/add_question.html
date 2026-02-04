@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Add Questions{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:900px;margin:auto;">
+    <h2>Add Questions</h2>
+
+    <form method="POST">
+        <div id="questions-container">
+
+            {% if questions %}
+            {% for q in questions %}
+            <div class="question-block">
+                <hr>
+                <h4 class="q-title">Question {{ loop.index }}</h4>
+
+                <textarea name="question[]" placeholder="Enter question" required>{{ q.question }}</textarea>
+
+                <input type="text" name="option1[]" placeholder="Option A" value="{{ q.option1 }}" required>
+                <input type="text" name="option2[]" placeholder="Option B" value="{{ q.option2 }}" required>
+                <input type="text" name="option3[]" placeholder="Option C" value="{{ q.option3 }}" required>
+                <input type="text" name="option4[]" placeholder="Option D" value="{{ q.option4 }}" required>
+
+                <select name="correct[]" required>
+                    <option value="">-- Select Correct Option --</option>
+                    <option value="option1" {{ 'selected' if q.correct=='option1' }}>Option A</option>
+                    <option value="option2" {{ 'selected' if q.correct=='option2' }}>Option B</option>
+                    <option value="option3" {{ 'selected' if q.correct=='option3' }}>Option C</option>
+                    <option value="option4" {{ 'selected' if q.correct=='option4' }}>Option D</option>
+                </select>
+            </div>
+            {% endfor %}
+            {% else %}
+            <!-- FIRST QUESTION -->
+            <div class="question-block">
+                <hr>
+                <h4 class="q-title">Question 1</h4>
+
+                <textarea name="question[]" placeholder="Enter question" required></textarea>
+
+                <input type="text" name="option1[]" placeholder="Option A" required>
+                <input type="text" name="option2[]" placeholder="Option B" required>
+                <input type="text" name="option3[]" placeholder="Option C" required>
+                <input type="text" name="option4[]" placeholder="Option D" required>
+
+                <select name="correct[]" required>
+                    <option value="">-- Select Correct Option --</option>
+                    <option value="option1">Option A</option>
+                    <option value="option2">Option B</option>
+                    <option value="option3">Option C</option>
+                    <option value="option4">Option D</option>
+                </select>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <div id="ai-box" style="
+    display:none;
+    margin-top:30px;
+    padding:15px;
+    border:2px dashed #4ade80;
+    background:#0f172a;
+    color:white;
+    white-space:pre-wrap;
+    max-height:400px;
+    overflow:auto;
+">
+            <h3>AI Generated Questions</h3>
+            <p style="font-size:13px;color:#9ca3af;">
+                Copy & paste into the form above. Edit before submitting.
+            </p>
+            <pre id="ai-content"></pre>
+        </div>
+
+
+        <div style="margin-top:20px;display:flex;gap:15px;">
+            <button type="button" class="btn small-btn" onclick="addQuestion()">➕ Add Question</button>
+            <button type="button" class="btn small-btn" onclick="generateWithAI()">
+                🤖 Generate with AI
+            </button>
+
+            <button type="submit" class="btn primary-btn">✅ Submit All</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function addQuestion() {
+        const container = document.getElementById("questions-container");
+        const blocks = container.querySelectorAll(".question-block");
+        const newIndex = blocks.length + 1;
+
+        const block = blocks[0].cloneNode(true);
+
+        // Update question title
+        block.querySelector(".q-title").innerText = "Question " + newIndex;
+
+        // Clear values
+        block.querySelectorAll("textarea, input").forEach(el => el.value = "");
+        block.querySelector("select").value = "";
+
+        container.appendChild(block);
+    }
+</script>
+
+<script>
+    function generateWithAI() {
+        fetch("/generate_questions_ai/{{ exam_id }}", {
+            method: "POST"
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                document.getElementById("ai-box").style.display = "block";
+                document.getElementById("ai-content").innerText = data.questions;
+            })
+            .catch(() => alert("AI generation failed"));
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}All Results{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <h2>All Student Results</h2>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Exam</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in results %}
+                <tr>
+                    <td>{{ r.student }}</td>
+                    <td>{{ r.exam }}</td>
+                    <td>{{ r.score }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" style="text-align:center;">
+                        No results available
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn small-btn">
+            ⬅ Back to Dashboard
+        </a>
+    </div>
+
+</div>
+{% endblock %}

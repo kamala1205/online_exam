@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Edit Exam{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:500px;margin:auto;">
+
+    <h2>Edit Exam</h2>
+
+    <form method="POST">
+        <label>Exam Title</label>
+        <input type="text" name="title" value="{{ exam.title }}" required>
+
+        <label>Start Time (optional)</label>
+        <input type="datetime-local" name="start_time"
+            value="{{ exam.start_time.strftime('%Y-%m-%dT%H:%M') if exam.start_time }}">
+
+        <label>End Time (optional)</label>
+        <input type="datetime-local" name="end_time"
+            value="{{ exam.end_time.strftime('%Y-%m-%dT%H:%M') if exam.end_time }}">
+
+        <label>Exam Duration (minutes)</label>
+        <input type="number" name="duration_minutes" value="{{ exam.duration_minutes }}" required>
+
+
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary-btn">
+                Update Exam
+            </button>
+
+            <a href="{{ url_for('admin_dashboard') }}" class="btn danger-btn">
+                Cancel
+            </a>
+        </div>
+
+        </a>
+</div>
+</form>
+
+</div>
+{% endblock %}

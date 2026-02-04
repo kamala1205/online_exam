@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Take Exam{% endblock %}
+
+{% block content %}
+
+<!-- TIMER -->
+<div class="exam-timer">
+    ⏳ Time Left: <span id="timer"></span>
+</div>
+
+<div class="exam-wrapper">
+
+    <h2 class="exam-title">{{ exam.title }}</h2>
+
+    <form method="POST" id="examForm">
+
+        {% for q in questions %}
+        <div class="question-card">
+            <p class="question-text">
+                <strong>Q{{ loop.index }}.</strong> {{ q.question }}
+            </p>
+
+            <label class="option">
+                <input type="radio" name="{{ q.id }}" value="{{ q.option1 }}" required>
+                {{ q.option1 }}
+            </label>
+
+            <label class="option">
+                <input type="radio" name="{{ q.id }}" value="{{ q.option2 }}">
+                {{ q.option2 }}
+            </label>
+
+            <label class="option">
+                <input type="radio" name="{{ q.id }}" value="{{ q.option3 }}">
+                {{ q.option3 }}
+            </label>
+
+            <label class="option">
+                <input type="radio" name="{{ q.id }}" value="{{ q.option4 }}">
+                {{ q.option4 }}
+            </label>
+        </div>
+        {% endfor %}
+
+        <div class="submit-box">
+            <button type="submit" class="btn submit-btn">
+                Submit Exam
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    /* Admin-defined exam duration */
+    let time = Number("{{ exam.duration_minutes | default(10) }}") * 60;
+
+    function startTimer() {
+        const timer = document.getElementById("timer");
+
+        const interval = setInterval(() => {
+            const min = Math.floor(time / 60);
+            const sec = time % 60;
+
+            timer.innerText = `${min}:${sec < 10 ? '0' : ''}${sec}`;
+
+            if (time <= 0) {
+                clearInterval(interval);
+                alert("⏰ Time over! Exam auto-submitted.");
+                document.getElementById("examForm").submit();
+            }
+
+            time--;
+        }, 1000);
+    }
+
+    startTimer();
+</script>
+
+
+{% endblock %}
