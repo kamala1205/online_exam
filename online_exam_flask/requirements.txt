@@ -5,4 +5,4 @@ Werkzeug
 google-generativeai
 PyMuPDF
 python-dotenv
-
+psycopg2-binary
