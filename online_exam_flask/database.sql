@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(150) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
@@ -8,13 +8,13 @@ CREATE TABLE users (
 );
 
 
-CREATE TABLE exams (
+CREATE TABLE IF NOT EXISTS exams (
     id SERIAL PRIMARY KEY,
     title VARCHAR(200),
     manager_id VARCHAR(50)
 );
 
-CREATE TABLE questions (
+CREATE TABLE IF NOT EXISTS questions (
     id SERIAL PRIMARY KEY,
     exam_id INTEGER REFERENCES exams(id) ON DELETE CASCADE,
     question VARCHAR(300),
@@ -25,7 +25,7 @@ CREATE TABLE questions (
     correct VARCHAR(100)
 );
 
-CREATE TABLE results (
+CREATE TABLE IF NOT EXISTS results (
     id SERIAL PRIMARY KEY,
     student VARCHAR(150),
     exam VARCHAR(200),
@@ -34,14 +34,18 @@ CREATE TABLE results (
 );
 
 ALTER TABLE exams
-ADD COLUMN notes_file VARCHAR(255);
+ADD COLUMN IF NOT EXISTS notes_file VARCHAR(255);
 
 ALTER TABLE exams
-ADD COLUMN start_time TIMESTAMP,
-ADD COLUMN end_time TIMESTAMP,
-ADD COLUMN duration_minutes INTEGER;
+ADD COLUMN IF NOT EXISTS start_time TIMESTAMP;
 
-CREATE TABLE student_answers (
+ALTER TABLE exams
+ADD COLUMN IF NOT EXISTS end_time TIMESTAMP;
+
+ALTER TABLE exams
+ADD COLUMN IF NOT EXISTS duration_minutes INTEGER;
+
+CREATE TABLE IF NOT EXISTS student_answers (
     id SERIAL PRIMARY KEY,
     student VARCHAR(150),
     exam_id INTEGER,
