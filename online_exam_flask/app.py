@@ -30,21 +30,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# ---------------- POSTGRES CONFIG ----------------
-DB_HOST = os.environ.get('DB_HOST', 'localhost')
-DB_NAME = os.environ.get('DB_NAME', 'online')
-DB_USER = os.environ.get('DB_USER', 'postgres')
-DB_PASS = os.environ.get('DB_PASS', 'Bapun@123')
-DB_PORT = os.environ.get('DB_PORT', '5432')
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db_conn():
-    return psycopg2.connect(
-        host=DB_HOST,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASS,
-        port=DB_PORT
-    )
+    return psycopg2.connect(DATABASE_URL)
 
 # ---------------- AUTH CHECK ----------------
 def login_required(role=None):
